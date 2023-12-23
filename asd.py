@@ -9,6 +9,31 @@ width, height = 725, 725
 screen = pygame.display.set_mode((width, height))
 
 
+class AnimatedSprite(pygame.sprite.Sprite):
+    def __init__(self, sheet, columns, rows, x, y):
+        super().__init__(all_sprites)
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+        self.rect.topleft = (x, y)
+        self.start_time = pygame.time.get_ticks()
+        self.delay = 50
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update(self):
+        self.cur_frame = ((pygame.time.get_ticks() - self.start_time) // self.delay) % len(self.frames)
+        self.image = self.frames[int(self.cur_frame)]
+
+
 class Slippers(pygame.sprite.Sprite):
     pass
 
@@ -25,19 +50,9 @@ class Puddle(pygame.sprite.Sprite):
     pass
 
 
-class Cockroach(pygame.sprite.Sprite):
-    def __init__(self, pos):
-        super().__init__(all_sprites)
-        self.image = pygame.image.load('cocroach.gif').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (145, 150))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = 300
-        self.rect.y = 435
-
-
 all_sprites = pygame.sprite.Group()
-Cockroach(all_sprites)
+sheet = pygame.image.load('bear.jpg').convert_alpha()
+AnimatedSprite(sheet, 6, 2, 300, 435)
 
 while True:
     screen.fill((255, 255, 255))
@@ -47,7 +62,7 @@ while True:
             sys.exit()
 
     # Update
-
+    all_sprites.update()
     # Draw
     all_sprites.draw(screen)
     pygame.display.flip()
