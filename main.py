@@ -19,9 +19,10 @@ class AnimatedSprite(pygame.sprite.Sprite):
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
                                 sheet.get_height() // rows)
+
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
-                    sheet.get_height() // rows)
+                                sheet.get_height() // rows)
         for j in range(rows):
             for i in range(columns):
                 frame_location = (self.rect.w * i, self.rect.h * j)
@@ -33,13 +34,11 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.image = self.frames[int(self.cur_frame)]
 
 
-
 class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
         self.cleaner = pygame.image.load('cleaner.jpeg')
         self.cleaner = pygame.transform.scale(self.cleaner, (100, 100))
-
 
 
 class Puddle(pygame.sprite.Sprite):
@@ -110,7 +109,6 @@ while True:
 
     # Update
 
-    all_sprites.update()
     # Draw
     all_sprites.draw(screen)
     pygame.display.flip()
