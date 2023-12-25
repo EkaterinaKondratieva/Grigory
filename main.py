@@ -4,12 +4,41 @@ from pygame.locals import *
 import random
 
 
+class AnimatedSprite(pygame.sprite.Sprite):
+    def __init__(self, sheet, sheet2, columns, rows, x, y):
+        super().__init__(all_sprites)
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cut_sheet2(sheet2, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+        self.rect.topleft = (x, y)
+        self.start_time = pygame.time.get_ticks()
+        self.delay = 50
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update(self):
+        self.cur_frame = ((pygame.time.get_ticks() - self.start_time) // self.delay) % len(self.frames)
+        self.image = self.frames[int(self.cur_frame)]
+
+
 class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
         self.cleaner = pygame.image.load('cleaner.jpeg')
         self.cleaner = pygame.transform.scale(self.cleaner, (100, 100))
-
 
 
 class Puddle(pygame.sprite.Sprite):
@@ -67,8 +96,12 @@ all_sprites = pygame.sprite.Group()
 start_fon()
 Cockroach(all_sprites)
 
-while True:
+# sheet = pygame.image.load('bear.jpg').convert_alpha()
+# AnimatedSprite(sheet, 6, 2, 300, 435)
+# sheet2 = pygame.image.load('slippers.jpg').convert_alpha()
+# AnimatedSprite(sheet2, 7, 1, 400, 500)
 
+while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
