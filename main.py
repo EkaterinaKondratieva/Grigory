@@ -7,7 +7,8 @@ import random
 class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
-
+        self.cleaner = pygame.image.load('cleaner.jpeg')
+        self.cleaner = pygame.transform.scale(self.cleaner, (100, 100))
 
 
 
@@ -32,8 +33,9 @@ class Slipers(pygame.sprite.Sprite):
 class Cockroach(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__(all_sprites)
-        self.image = pygame.image.load('cockroach.png').convert_alpha()
+        self.image = pygame.image.load('cockroach.jpeg').convert_alpha()
         self.image = pygame.transform.scale(self.image, (145, 150))
+        self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.rect.x = 300
         self.rect.y = 435
