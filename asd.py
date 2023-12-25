@@ -3,31 +3,13 @@ import pygame
 from pygame.locals import *
 import random
 
-pygame.init()
-fps = 60
-fpsClock = pygame.time.Clock()
-width, height = 725, 725
-screen = pygame.display.set_mode((width, height))
-
-
-class Slippers(pygame.sprite.Sprite):
-    pass
-
-
-class Floor(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__(all_sprites)
-        self.image = pygame.image.load('floor.jpg')
-        self.image = pygame.transform.scale(self.image, (725, 145))
-        self.rect = self.image.get_rect()
-        self.rect.x = 0
-        self.rect.y = 0
-
-    def update(self):
-        self.rect.y += 145
-
 
 class Cleaner(pygame.sprite.Sprite):
+    # def __init__(self, x, y):
+    #
+    #
+    # def update(self):
+    #     self.rect.y += 145
     pass
 
 
@@ -35,7 +17,7 @@ class Puddle(pygame.sprite.Sprite):
     pass
 
 
-class Carpet(pygame.sprite.Sprite):
+class Slipers(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
         self.image = pygame.image.load('carpet.jpg')
@@ -57,29 +39,35 @@ class Cockroach(pygame.sprite.Sprite):
         self.rect.y = 435
 
 
+def start_fon():
+    fon = pygame.image.load('floor.jpg')
+    fon = pygame.transform.scale(fon, (725, 725))
+    screen.blit(fon, (0, 0))
+    for i in range(4):
+        num = random.choice([1, 2, 3])
+        if num == 3:
+            Slipers(0, 145 * i)
+
+
+pygame.init()
+fps = 60
+fpsClock = pygame.time.Clock()
+width, height = 725, 725
+screen = pygame.display.set_mode((width, height))
 all_sprites = pygame.sprite.Group()
+start_fon()
 Cockroach(all_sprites)
 
-
-
 while True:
-    screen.fill((255, 255, 255))
-    for i in range(4):
-        lst = [Floor(0, 145 * i), Carpet(0, 145 * i)]
-        random.choices(lst)
 
-    Cockroach(all_sprites)
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == KEYDOWN:
-            new_line = random.choice([Floor, Carpet])
 
     # Update
     all_sprites.update()
     # Draw
     all_sprites.draw(screen)
     pygame.display.flip()
-
     fpsClock.tick(fps)
