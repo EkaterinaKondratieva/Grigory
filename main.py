@@ -1,13 +1,7 @@
 import sys
 import pygame
 from pygame.locals import *
-<<<<<<< HEAD
-
-pygame.init()
-fps = 65
-fpsClock = pygame.time.Clock()
-width, height = 725, 725
-screen = pygame.display.set_mode((width, height))
+import random
 
 
 class AnimatedSprite(pygame.sprite.Sprite):
@@ -38,29 +32,6 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.cur_frame = ((pygame.time.get_ticks() - self.start_time) // self.delay) % len(self.frames)
         self.image = self.frames[int(self.cur_frame)]
 
-
-class Slippers(pygame.sprite.Sprite):
-    pass
-
-
-class Cleaner(pygame.sprite.Sprite):
-    pass
-
-
-class Puddle(pygame.sprite.Sprite):
-    pass
-
-
-all_sprites = pygame.sprite.Group()
-sheet = pygame.image.load('bear.jpg').convert_alpha()
-AnimatedSprite(sheet, 6, 2, 300, 435)
-sheet2 = pygame.image.load('slippers.jpg').convert_alpha()
-AnimatedSprite(sheet2, 7, 1, 400, 500)
-
-while True:
-    screen.fill((255, 255, 255))
-=======
-import random
 
 
 class Cleaner(pygame.sprite.Sprite):
@@ -126,25 +97,21 @@ all_sprites = pygame.sprite.Group()
 start_fon()
 Cockroach(all_sprites)
 
-while True:
+# sheet = pygame.image.load('bear.jpg').convert_alpha()
+# AnimatedSprite(sheet, 6, 2, 300, 435)
+# sheet2 = pygame.image.load('slippers.jpg').convert_alpha()
+# AnimatedSprite(sheet2, 7, 1, 400, 500)
 
->>>>>>> 3d4e76fcfebbb157963106d7b9124bc2ccef93ae
+while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
 
     # Update
-<<<<<<< HEAD
+
     all_sprites.update()
     # Draw
     all_sprites.draw(screen)
     pygame.display.flip()
-
-=======
-
-    # Draw
-    all_sprites.draw(screen)
-    pygame.display.flip()
->>>>>>> 3d4e76fcfebbb157963106d7b9124bc2ccef93ae
     fpsClock.tick(fps)
