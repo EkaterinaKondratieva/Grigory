@@ -42,10 +42,6 @@ class Slippers(pygame.sprite.Sprite):
     pass
 
 
-class Floor(pygame.sprite.Sprite):
-    pass
-
-
 class Cleaner(pygame.sprite.Sprite):
     pass
 
