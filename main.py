@@ -5,21 +5,38 @@ import random
 
 
 class Cleaner(pygame.sprite.Sprite):
+    image = pygame.image.load('cleaner.jpeg')
+    image = pygame.transform.scale(image, (130, 130))
+    image.set_colorkey('white')
     def __init__(self, x, y):
         super().__init__(all_sprites)
+        self.cleaners = []
         self.time = pygame.time.get_ticks()
-        self.start = random.choice([2,1,3]) * 1000
-        self.image = pygame.image.load('cleaner.jpeg')
-        self.image = pygame.transform.scale(self.image, (130, 130))
-        self.image.set_colorkey('white')
+        self.start = random.choice([0, 2, 1, 3]) * 1000
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
         self.rect.topright = (self.x, self.y)
+        self.new_cleaner = random.choice([ 2, 1, 3]) * 1000
+        self.cleaners.append(self.rect)
 
     def move(self):
-        if pygame.time.get_ticks() - self.time >= self.start:
-            self.rect.x += 1
+        for i in range(len(self.cleaners)):
+            if i == 0:
+                if pygame.time.get_ticks() - self.time >= self.start:
+                   self.cleaners[i].x += 1
+            else:
+                self.cleaners[i].x += 1
+
+
+    def new(self):
+        self.time = pygame.time.get_ticks()
+        self.rect2 = self.image.get_rect()
+        self.rect2.topright = (self.x, self.y)
+        self.new_cleaner = random.choice([2, 1, 3]) * 1000
+        self.cleaners.append(self.rect2)
+
+
 
 
 class Puddle(pygame.sprite.Sprite):
@@ -60,7 +77,7 @@ def start_fon():
         if num == 3:
             Slipers(0, 145 * i)
         elif num == 1:
-            cleaners.append(Cleaner(0, 145 * i))
+            all_cleaners.append(Cleaner(0, 145 * i))
 
         # else:
         #     Puddle(0, 145 * i)
@@ -72,7 +89,7 @@ fpsClock = pygame.time.Clock()
 width, height = 725, 725
 screen = pygame.display.set_mode((width, height))
 all_sprites = pygame.sprite.Group()
-cleaners = []
+all_cleaners = []
 fon = pygame.image.load('floor.jpg')
 fon = pygame.transform.scale(fon, (725, 725))
 screen.blit(fon, (0, 0))
@@ -87,8 +104,11 @@ while True:
             sys.exit()
 
     # Update
-    for elem in cleaners:
+    for elem in all_cleaners:
         elem.move()
+        if pygame.time.get_ticks() - elem.time >= elem.new_cleaner:
+            elem.new()
+
 
     # Draw
     all_sprites.draw(screen)
