@@ -7,19 +7,19 @@ import random
 class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
-        self.x = x
-        self.y = y
-        self.picture()
-    def picture(self):
+        self.time = pygame.time.get_ticks()
+        self.start = random.choice([2,1,3]) * 1000
         self.image = pygame.image.load('cleaner.jpeg')
         self.image = pygame.transform.scale(self.image, (130, 130))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
         self.rect.topright = (self.x, self.y)
-        self.start = pygame.time.get_ticks()
 
     def move(self):
-        self.rect.x += 1
+        if pygame.time.get_ticks() - self.time >= self.start:
+            self.rect.x += 1
 
 
 class Puddle(pygame.sprite.Sprite):
@@ -61,6 +61,7 @@ def start_fon():
             Slipers(0, 145 * i)
         elif num == 1:
             cleaners.append(Cleaner(0, 145 * i))
+
         # else:
         #     Puddle(0, 145 * i)
 
