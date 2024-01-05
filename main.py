@@ -5,38 +5,20 @@ import random
 
 
 class Cleaner(pygame.sprite.Sprite):
-    image = pygame.image.load('cleaner.jpeg')
-    image = pygame.transform.scale(image, (130, 130))
-    image.set_colorkey('white')
     def __init__(self, x, y):
         super().__init__(all_sprites)
-        self.cleaners = []
         self.time = pygame.time.get_ticks()
-        self.start = random.choice([0, 2, 1, 3]) * 1000
+        self.start = random.choice([2,1,3]) * 1000
+        self.image = pygame.image.load('cleaner.jpeg')
+        self.image = pygame.transform.scale(self.image, (160, 160))
+        self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.rect.topright = (self.x, self.y)
-        self.new_cleaner = random.choice([ 2, 1, 3]) * 1000
-        self.cleaners.append(self.rect)
-
+        self.rect.center = (-75, self.y + 75)
     def move(self):
-        for i in range(len(self.cleaners)):
-            if i == 0:
-                if pygame.time.get_ticks() - self.time >= self.start:
-                   self.cleaners[i].x += 1
-            else:
-                self.cleaners[i].x += 1
-
-
-    def new(self):
-        self.time = pygame.time.get_ticks()
-        self.rect2 = self.image.get_rect()
-        self.rect2.topright = (self.x, self.y)
-        self.new_cleaner = random.choice([2, 1, 3]) * 1000
-        self.cleaners.append(self.rect2)
-
-
+        if pygame.time.get_ticks() - self.time >= self.start:
+            self.rect.x += 1
 
 
 class Puddle(pygame.sprite.Sprite):
@@ -47,24 +29,24 @@ class Slipers(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
         self.image = pygame.image.load('carpet.jpeg')
-        self.image = pygame.transform.scale(self.image, (725, 145))
+        self.image = pygame.transform.scale(self.image, (750, 150))
         self.rect = self.image.get_rect()
-        self.rect.x = x
+        self.rect.x = 0
         self.rect.y = y
-
-    def update(self):
-        self.rect.y += 145
 
 
 class Cockroach(pygame.sprite.Sprite):
-    def __init__(self, pos):
+    def __init__(self):
         super().__init__(all_sprites)
         self.image = pygame.image.load('cockroach.jpeg').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (145, 150))
+        self.image = pygame.transform.scale(self.image, (145, 140))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
-        self.rect.x = 300
-        self.rect.y = 435
+        self.rect.center = (375, 530)
+
+    def move(self):
+        self.rect.y -= 150
+
 
 
 def start_fon():
@@ -75,26 +57,49 @@ def start_fon():
         # 3 slipers
         print(num)
         if num == 3:
-            Slipers(0, 145 * i)
+            Slipers(0, 150 * i)
         elif num == 1:
-            all_cleaners.append(Cleaner(0, 145 * i))
+            cleaners.append(Cleaner(0, 150 * i))
 
         # else:
         #     Puddle(0, 145 * i)
 
 
+class Camera:
+    # зададим начальный сдвиг камеры
+    def __init__(self):
+        self.dx = 0
+        self.dy = 0
+
+    # сдвинуть объект obj на смещение камеры
+    def apply(self, obj):
+        obj.rect.y += self.dy
+
+    # позиционировать камеру на объекте target
+    def update(self, target):
+        self.dx = 0
+        self.dy = -(target.rect.y + target.rect.h // 2 - height / 5 * 3 - 60)
+
+
+
 pygame.init()
 fps = 60
 fpsClock = pygame.time.Clock()
-width, height = 725, 725
+width, height = 750, 750
 screen = pygame.display.set_mode((width, height))
 all_sprites = pygame.sprite.Group()
-all_cleaners = []
+
+cleaners = []
+
 fon = pygame.image.load('floor.jpg')
-fon = pygame.transform.scale(fon, (725, 725))
+fon = pygame.transform.scale(fon, (750, 750))
 screen.blit(fon, (0, 0))
 start_fon()
-Cockroach(all_sprites)
+
+cockroach = Cockroach()
+
+camera = Camera()
+
 
 while True:
     screen.blit(fon, (0, 0))
@@ -102,12 +107,29 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            cockroach.move()
+            num = random.choice([1, 2, 3])
+            # 1 cleaner
+            # 2 puddle
+            # 3 slipers
+
+            if num == 3:
+                Slipers(0, -145)
+            elif num == 1:
+                cleaners.append(Cleaner(0, -145))
+            # else:
+            #     Puddle(0, -145)
+
 
     # Update
-    for elem in all_cleaners:
+    for elem in cleaners:
         elem.move()
-        if pygame.time.get_ticks() - elem.time >= elem.new_cleaner:
-            elem.new()
+
+    camera.update(cockroach)
+    # обновляем положение всех спрайтов
+    for sprite in all_sprites:
+        camera.apply(sprite)
 
 
     # Draw
