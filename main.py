@@ -18,7 +18,7 @@ class Cleaner(pygame.sprite.Sprite):
         self.rect.center = (-75, self.y + 75)
     def move(self):
         if pygame.time.get_ticks() - self.time >= self.start:
-            self.rect.x += 1
+            self.rect.x += 2
 
 
 class Puddle(pygame.sprite.Sprite):
@@ -39,10 +39,15 @@ class Cockroach(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__(all_sprites)
         self.image = pygame.image.load('cockroach.jpeg').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (145, 140))
+        self.image = pygame.transform.scale(self.image, (146, 140))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
-        self.rect.center = (375, 530)
+        self.rect.topleft = (302, 455)
+        self.x = 302
+        self.y = 455
+
+    def get_image(self):
+        return self.image
 
     def move(self):
         self.rect.y -= 150
@@ -79,7 +84,6 @@ class Camera:
     def update(self, target):
         self.dx = 0
         self.dy = -(target.rect.y + target.rect.h // 2 - height / 5 * 3 - 60)
-
 
 
 pygame.init()
@@ -134,6 +138,6 @@ while True:
 
     # Draw
     all_sprites.draw(screen)
-
+    screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y - 17 ))
     pygame.display.flip()
     fpsClock.tick(fps)
