@@ -69,12 +69,6 @@ class Cockroach(pygame.sprite.Sprite):
                 break
         return game_over
 
-
-def close():
-    width2, height2 = 450, 450
-    screen2 = pygame.display.set_mode((width, height))
-
-
 def start_fon():
     for i in range(3):
         num = random.choice([1, 2, 3])
@@ -87,11 +81,11 @@ def start_fon():
         elif num == 1:
             Floor(0, 150 * i)
             cleaners.append(Cleaner(0, 150 * i))
-
         # else:
         #     Puddle(0, 145 * i)
         Floor(0, 150 * 3)
         Floor(0, 150 * 4)
+
 class Camera:
     # зададим начальный сдвиг камеры
     def __init__(self):
@@ -123,39 +117,57 @@ cockroach = Cockroach()
 
 camera = Camera()
 
-while True:
+score = 0
+game = True
+next_wind = True
+while next_wind:
+    while game:
+        screen.fill('white')
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                cockroach.move()
+                num = random.choice([1, 2, 3])
+                # 1 cleaner
+                # 2 puddle
+                # 3 slipers
+
+                if num == 3:
+                    Slipers(0, -150)
+                elif num == 1:
+                    Floor(0, -150)
+                    cleaners.append(Cleaner(0, -150))
+                # else:
+                #     Puddle(0, -145)
+
+        # Update
+        for elem in cleaners:
+            elem.move()
+
+        camera.update(cockroach)
+        # обновляем положение всех спрайтов
+        for sprite in all_sprites:
+            camera.apply(sprite)
+        if cockroach.colllision():
+            game = False
+        else:
+            score += 1
+
+
+        # Draw
+        all_sprites.draw(screen)
+        screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
+        pygame.display.flip()
+        fpsClock.tick(fps)
+
+
+    width, height = 450, 450
+    screen = pygame.display.set_mode((width, height))
     screen.fill('white')
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.KEYDOWN:
-            cockroach.move()
-            num = random.choice([1, 2, 3])
-            # 1 cleaner
-            # 2 puddle
-            # 3 slipers
 
-            if num == 3:
-                Slipers(0, -150)
-            elif num == 1:
-                Floor(0, -150)
-                cleaners.append(Cleaner(0, -150))
-            # else:
-            #     Puddle(0, -145)
-
-    # Update
-    for elem in cleaners:
-        elem.move()
-
-    camera.update(cockroach)
-    # обновляем положение всех спрайтов
-    for sprite in all_sprites:
-        camera.apply(sprite)
-    if cockroach.colllision():
-        close()
-    # Draw
-    all_sprites.draw(screen)
-    screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
-    pygame.display.flip()
-    fpsClock.tick(fps)
