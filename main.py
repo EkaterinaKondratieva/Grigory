@@ -62,7 +62,7 @@ class Slipers(pygame.sprite.Sprite):
 class Cockroach(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__(all_sprites)
-        self.image = pygame.image.load('cockroach.jpeg').convert_alpha()
+        self.image = pygame.image.load('cockroach.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (145, 150))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
