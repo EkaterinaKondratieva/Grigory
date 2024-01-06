@@ -67,7 +67,7 @@ class Cockroach(pygame.sprite.Sprite):
 def close():
     width2, height2 = 450, 450
     screen2 = pygame.display.set_mode((width, height))
-
+    screen.quit()
 
 def start_fon():
     for i in range(3):
