@@ -28,6 +28,7 @@ class Cleaner(pygame.sprite.Sprite):
         self.y = y
         self.rect.center = (-75, self.y + 75)
         self.mask = pygame.mask.from_surface(self.image)
+
     def move(self):
         if pygame.time.get_ticks() - self.time >= self.start:
             self.rect.x += 3
@@ -35,6 +36,7 @@ class Cleaner(pygame.sprite.Sprite):
 
 class Puddle(pygame.sprite.Sprite):
     pass
+
 
 class Carpet(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -44,6 +46,7 @@ class Carpet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = y
+
 
 class Slipers(pygame.sprite.Sprite):
     pass
@@ -130,6 +133,7 @@ score = 0
 game = True
 next_wind = True
 while next_wind:
+    pygame.display.update()
     while game:
         screen.fill('white')
         for event in pygame.event.get():
@@ -173,14 +177,27 @@ while next_wind:
     width, height = 450, 450
     screen = pygame.display.set_mode((width, height))
 
+    fon = pygame.image.load('floor.jpg')
+    fon = pygame.transform.scale(fon, (450, 450))
+    screen.blit(fon, (0, 0))
 
+    restart = pygame.image.load('restart.png').convert_alpha()
+    restart = pygame.transform.scale(restart, (144, 144))
+    screen.blit(restart, (153, 225))
     for event in pygame.event.get():
         if event.type == QUIT:
             next_wind = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            game = True
-            width, height = 750, 750
-            screen = pygame.display.set_mode((width, height))
-            screen.fill('white')
-            cleaners = []
-            start_fon()
+            pos = event.pos
+            x_pos = pos[0]
+            y_pos = pos[1]
+            if 297 >= x_pos and x_pos >= 153 and y_pos >= 225 and y_pos <= 369:
+                print('ckicked')
+                game = True
+                width, height = 750, 750
+                screen = pygame.display.set_mode((width, height))
+                screen.fill('white')
+                cleaners = []
+                start_fon()
+    pygame.display.flip()
+    fpsClock.tick(fps)
