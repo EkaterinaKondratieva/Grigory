@@ -132,7 +132,7 @@ camera = Camera()
 
 font = pygame.font.Font(None, 50)
 score = 0
-
+all_results = []
 game = True
 next_wind = True
 while next_wind:
@@ -173,10 +173,11 @@ while next_wind:
         if cockroach.colllision():
             game = False
             score -= 1
+            all_results.append(score)
         # Draw
         all_sprites.draw(screen)
         screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
-        text = font.render(str(score), True, (255, 0, 0))
+        text = font.render(f'{str(score)}', True, (255, 0, 0))
         screen.blit(text, (375, 0))
         pygame.display.flip()
         fpsClock.tick(fps)
@@ -191,6 +192,15 @@ while next_wind:
     restart = pygame.image.load('restart.png').convert_alpha()
     restart = pygame.transform.scale(restart, (144, 144))
     screen.blit(restart, (153, 225))
+
+    font = pygame.font.Font(None, 40)
+
+    text = font.render(f'Ваш результат: {str(score)}', True, (255, 0, 0))
+    screen.blit(text, (120, 60))
+
+    text2 = font.render(f'Лучший результат: {str(max(all_results))}', True, (255, 0, 0))
+    screen.blit(text2, (100, 100))
+
     for event in pygame.event.get():
         if event.type == QUIT:
             next_wind = False
