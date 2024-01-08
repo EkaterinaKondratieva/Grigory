@@ -85,6 +85,7 @@ def start_fon():
         # 1 cleaner
         # 2 puddle
         # 3 slipers
+
         print(num)
         if num == 3:
             Carpet(0, 150 * i)
@@ -129,7 +130,9 @@ cockroach = Cockroach()
 
 camera = Camera()
 
+font = pygame.font.Font(None, 50)
 score = 0
+
 game = True
 next_wind = True
 while next_wind:
@@ -142,17 +145,20 @@ while next_wind:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 cockroach.move()
-                num = random.choice([1, 2, 3])
+                score += 1
+                num = random.choice([1, 2, 3, 4])
                 # 1 cleaner
                 # 2 puddle
                 # 3 slipers
-
+                # 4 floor
                 if num == 3:
                     Carpet(0, -150)
                     # Slipers(0, -150)
                 elif num == 1:
                     Floor(0, -150)
                     cleaners.append(Cleaner(0, -150))
+                elif num == 4:
+                    Floor(0, -150)
                 # else:
                 #     Puddle(0, -145)
 
@@ -166,11 +172,12 @@ while next_wind:
             camera.apply(sprite)
         if cockroach.colllision():
             game = False
-        else:
-            score += 1
+            score -= 1
         # Draw
         all_sprites.draw(screen)
         screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
+        text = font.render(str(score), True, (255, 0, 0))
+        screen.blit(text, (375, 0))
         pygame.display.flip()
         fpsClock.tick(fps)
 
@@ -195,6 +202,7 @@ while next_wind:
                 print('ckicked')
                 game = True
                 width, height = 750, 750
+                score = 0
                 screen = pygame.display.set_mode((width, height))
                 screen.fill('white')
                 cleaners = []
