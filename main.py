@@ -12,8 +12,6 @@ class Floor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = y
-
-
 class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
@@ -33,19 +31,10 @@ class Cleaner(pygame.sprite.Sprite):
 
 
 class Puddle(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__(all_sprites)
-        self.image = pygame.image.load('puddle.png')
-        self.image.set_colorkey('white')
-        self.image = pygame.transform.scale(self.image, (750, 150))
-        self.rect = self.image.get_rect()
-        self.rect.x = 0
-        self.rect.y = y
-
-    # если мы умрём, то похороните нас на Мальдивах
+    pass
 
 
-class Slippers(pygame.sprite.Sprite):
+class Slipers(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
         self.image = pygame.image.load('carpet.jpeg')
@@ -72,7 +61,7 @@ class Cockroach(pygame.sprite.Sprite):
     def move(self):
         self.rect.y -= 150
 
-    def collision(self):
+    def colllision(self):
         game_over = False
         for elem in cleaners:
             if pygame.sprite.collide_mask(self, elem):
@@ -91,20 +80,18 @@ def start_fon():
         num = random.choice([1, 2, 3])
         # 1 cleaner
         # 2 puddle
-        # 3 slippers
+        # 3 slipers
         print(num)
         if num == 3:
-            Slippers(0, 150 * i)
+            Slipers(0, 150 * i)
         elif num == 1:
             Floor(0, 150 * i)
             cleaners.append(Cleaner(0, 150 * i))
-        else:
-            Floor(0, 150 * i)
-            Puddle(0, 150 * i)
+
+        # else:
+        #     Puddle(0, 145 * i)
         Floor(0, 150 * 3)
         Floor(0, 150 * 4)
-
-
 class Camera:
     # зададим начальный сдвиг камеры
     def __init__(self):
@@ -148,15 +135,14 @@ while True:
             # 1 cleaner
             # 2 puddle
             # 3 slipers
+
             if num == 3:
-                Slippers(0, -150)
-            elif num == 2:
-                Floor(0, -150)
-                Puddle(0, -150)
+                Slipers(0, -150)
             elif num == 1:
                 Floor(0, -150)
                 cleaners.append(Cleaner(0, -150))
-            print(num)
+            # else:
+            #     Puddle(0, -145)
 
     # Update
     for elem in cleaners:
@@ -166,7 +152,7 @@ while True:
     # обновляем положение всех спрайтов
     for sprite in all_sprites:
         camera.apply(sprite)
-    if cockroach.collision():
+    if cockroach.colllision():
         close()
     # Draw
     all_sprites.draw(screen)
