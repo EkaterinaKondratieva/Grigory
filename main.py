@@ -12,6 +12,8 @@ class Floor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = y
+
+
 class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
@@ -31,10 +33,18 @@ class Cleaner(pygame.sprite.Sprite):
 
 
 class Puddle(pygame.sprite.Sprite):
-    pass
+
+    def __init__(self, x, y):
+        super().__init__(all_sprites)
+        self.image = pygame.image.load('puddle.png')
+        self.image.set_colorkey('white')
+        self.rect = self.image.get_rect()
+        self.x = 0
+        self.y = y
+    # если мы умрём, то похороните нас на Мальдивах
 
 
-class Slipers(pygame.sprite.Sprite):
+class Slippers(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
         self.image = pygame.image.load('carpet.jpeg')
@@ -61,7 +71,7 @@ class Cockroach(pygame.sprite.Sprite):
     def move(self):
         self.rect.y -= 150
 
-    def colllision(self):
+    def collision(self):
         game_over = False
         for elem in cleaners:
             if pygame.sprite.collide_mask(self, elem):
@@ -83,7 +93,7 @@ def start_fon():
         # 3 slipers
         print(num)
         if num == 3:
-            Slipers(0, 150 * i)
+            Slippers(0, 150 * i)
         elif num == 1:
             Floor(0, 150 * i)
             cleaners.append(Cleaner(0, 150 * i))
@@ -92,6 +102,8 @@ def start_fon():
         #     Puddle(0, 145 * i)
         Floor(0, 150 * 3)
         Floor(0, 150 * 4)
+
+
 class Camera:
     # зададим начальный сдвиг камеры
     def __init__(self):
@@ -137,7 +149,10 @@ while True:
             # 3 slipers
 
             if num == 3:
-                Slipers(0, -150)
+                Slippers(0, -150)
+            elif num == 2:
+                Floor(0, -150)
+                Puddle(0, -150)
             elif num == 1:
                 Floor(0, -150)
                 cleaners.append(Cleaner(0, -150))
@@ -152,7 +167,7 @@ while True:
     # обновляем положение всех спрайтов
     for sprite in all_sprites:
         camera.apply(sprite)
-    if cockroach.colllision():
+    if cockroach.collision():
         close()
     # Draw
     all_sprites.draw(screen)
