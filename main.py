@@ -19,9 +19,8 @@ class Cleaner(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
-        self.image = pygame.image.load('cleaner.png')
-        self.image = pygame.transform.rotate(self.image, -90)
-        self.image = pygame.transform.scale(self.image, (130, 130))
+        self.image = pygame.image.load('cleaner.jpeg')
+        self.image = pygame.transform.scale(self.image, (160, 160))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.x = x
