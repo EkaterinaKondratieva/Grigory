@@ -17,10 +17,10 @@ class Floor(pygame.sprite.Sprite):
 class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
+        self.сleaners_in_line = []
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
         self.image = pygame.image.load('cleaner.jpeg')
-
         self.image = pygame.transform.scale(self.image, (160, 160))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
@@ -28,11 +28,31 @@ class Cleaner(pygame.sprite.Sprite):
         self.y = y
         self.rect.center = (-75, self.y + 75)
         self.mask = pygame.mask.from_surface(self.image)
+        sprite = self.image
+        self.сleaners_in_line.append(sprite)
+        self.next_cleaner = random.choice([2, 3, 4]) * 1000
 
     def move(self):
-        if pygame.time.get_ticks() - self.time >= self.start:
-            self.rect.x += 3
+        for i in range(len(self.сleaners_in_line)):
+            if i == 0:
+                if pygame.time.get_ticks() - self.time >= self.start:
+                    self.rect.x += 3
+                if pygame.time.get_ticks() - self.time >= self.next_cleaner:
+                    self.time = pygame.time.get_ticks()
+                    self.next_cleaner = random.choice([2, 3, 4]) * 1000
+                    self.new_cleaner()
+            else:
+                self.rect.x += 3
 
+    def new_cleaner(self):
+        new = pygame.image.load('cleaner.jpeg')
+        new = pygame.transform.scale(new, (160, 160))
+        new.set_colorkey('white')
+        new_rect = new.get_rect()
+        top_right = (self.x, self.y)
+        self.сleaners_in_line.append(new)
+        print(self.сleaners_in_line)
+        screen.blit(new, top_right)
 
 class Puddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -43,7 +63,6 @@ class Puddle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = y
-
 
 
 class Carpet(pygame.sprite.Sprite):
