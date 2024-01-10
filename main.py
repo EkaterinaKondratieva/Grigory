@@ -19,9 +19,9 @@ class Cleaner(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
-        self.image = pygame.image.load('cleaner.png')
-        self.image = pygame.transform.rotate(self.image, -90)
-        self.image = pygame.transform.scale(self.image, (130, 130))
+        self.image = pygame.image.load('cleaner.jpeg')
+
+        self.image = pygame.transform.scale(self.image, (160, 160))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.x = x
@@ -132,6 +132,7 @@ camera = Camera()
 
 font = pygame.font.Font(None, 50)
 score = 0
+
 all_results = []
 game = True
 next_wind = True
@@ -177,6 +178,7 @@ while next_wind:
         # Draw
         all_sprites.draw(screen)
         screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
+        text = font.render(str(score), True, (255, 0, 0))
         text = font.render(f'{str(score)}', True, (255, 0, 0))
         screen.blit(text, (375, 0))
         pygame.display.flip()
@@ -219,3 +221,4 @@ while next_wind:
                 start_fon()
     pygame.display.flip()
     fpsClock.tick(fps)
+
