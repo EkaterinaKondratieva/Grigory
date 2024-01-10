@@ -4,217 +4,112 @@ from pygame.locals import *
 import random
 
 
-class Floor(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+class AnimatedSprite(pygame.sprite.Sprite):
+    def __init__(self, sheet, sheet2, columns, rows, x, y):
         super().__init__(all_sprites)
-        self.image = pygame.image.load('floor.jpg')
-        self.image = pygame.transform.scale(self.image, (750, 150))
-        self.rect = self.image.get_rect()
-        self.rect.x = 0
-        self.rect.y = y
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cut_sheet2(sheet2, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+        self.rect.topleft = (x, y)
+        self.start_time = pygame.time.get_ticks()
+        self.delay = 50
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update(self):
+        self.cur_frame = ((pygame.time.get_ticks() - self.start_time) // self.delay) % len(self.frames)
+        self.image = self.frames[int(self.cur_frame)]
 
 
 class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
-        self.time = pygame.time.get_ticks()
-        self.start = random.choice([0, 2, 1, 3]) * 1000
-        self.image = pygame.image.load('cleaner.jpeg')
-        self.image = pygame.transform.scale(self.image, (160, 160))
-        self.image.set_colorkey('white')
-        self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.center = (-75, self.y + 75)
-        self.mask = pygame.mask.from_surface(self.image)
-
-    def move(self):
-        if pygame.time.get_ticks() - self.time >= self.start:
-            self.rect.x += 3
+        self.cleaner = pygame.image.load('cleaner.jpeg')
+        self.cleaner = pygame.transform.scale(self.cleaner, (100, 100))
 
 
 class Puddle(pygame.sprite.Sprite):
-    pass
-
-
-class Carpet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
-        self.image = pygame.image.load('carpet.jpeg')
-        self.image = pygame.transform.scale(self.image, (750, 150))
-        self.rect = self.image.get_rect()
-        self.rect.x = 0
-        self.rect.y = y
 
 
 class Slipers(pygame.sprite.Sprite):
-    pass
+    def __init__(self, x, y):
+        super().__init__(all_sprites)
+        self.image = pygame.image.load('carpet.jpeg')
+        self.image = pygame.transform.scale(self.image, (725, 145))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def update(self):
+        self.rect.y += 145
 
 
 class Cockroach(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, pos):
         super().__init__(all_sprites)
-        self.image = pygame.image.load('cockroach.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (146, 140))
+        self.image = pygame.image.load('cockroach.jpeg').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (145, 150))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
-        self.rect.topleft = (302, 455)
-        self.x = 302
-        self.y = 455
-        self.mask = pygame.mask.from_surface(self.image)
-
-    def get_image(self):
-        return self.image
-
-    def move(self):
-        self.rect.y -= 150
-
-    def colllision(self):
-        game_over = False
-        for elem in cleaners:
-            if pygame.sprite.collide_mask(self, elem):
-                game_over = True
-                break
-        return game_over
+        self.rect.x = 300
+        self.rect.y = 435
 
 
 def start_fon():
+    fon = pygame.image.load('floor.jpg')
+    fon = pygame.transform.scale(fon, (725, 725))
+    screen.blit(fon, (0, 0))
     for i in range(3):
         num = random.choice([1, 2, 3])
         # 1 cleaner
         # 2 puddle
         # 3 slipers
-
-        print(num)
         if num == 3:
-            Carpet(0, 150 * i)
-            # Slipers(0, 150 * i)
-        elif num == 1:
-            Floor(0, 150 * i)
-            cleaners.append(Cleaner(0, 150 * i))
+            Slipers(0, 145 * i)
+        # elif num == 1:
+        #     Cleaner(0, 145 * i)
         # else:
         #     Puddle(0, 145 * i)
-        Floor(0, 150 * 3)
-        Floor(0, 150 * 4)
-
-
-class Camera:
-    # зададим начальный сдвиг камеры
-    def __init__(self):
-        self.dx = 0
-        self.dy = 0
-
-    # сдвинуть объект obj на смещение камеры
-    def apply(self, obj):
-        obj.rect.y += self.dy
-
-    # позиционировать камеру на объекте target
-    def update(self, target):
-        self.dx = 0
-        self.dy = -(target.rect.y + target.rect.h // 2 - height / 5 * 3 - 75)
 
 
 pygame.init()
 fps = 60
 fpsClock = pygame.time.Clock()
-width, height = 750, 750
+width, height = 725, 725
 screen = pygame.display.set_mode((width, height))
 all_sprites = pygame.sprite.Group()
-
-cleaners = []
-
 start_fon()
+Cockroach(all_sprites)
 
-cockroach = Cockroach()
+# sheet = pygame.image.load('bear.jpg').convert_alpha()
+# AnimatedSprite(sheet, 6, 2, 300, 435)
+# sheet2 = pygame.image.load('slippers.jpg').convert_alpha()
+# AnimatedSprite(sheet2, 7, 1, 400, 500)
 
-camera = Camera()
-
-font = pygame.font.Font(None, 50)
-score = 0
-all_results = []
-game = True
-next_wind = True
-while next_wind:
-    pygame.display.update()
-    while game:
-        screen.fill('white')
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                cockroach.move()
-                score += 1
-                num = random.choice([1, 2, 3, 4])
-                # 1 cleaner
-                # 2 puddle
-                # 3 slipers
-                # 4 floor
-                if num == 3:
-                    Carpet(0, -150)
-                    # Slipers(0, -150)
-                elif num == 1:
-                    Floor(0, -150)
-                    cleaners.append(Cleaner(0, -150))
-                elif num == 4:
-                    Floor(0, -150)
-                # else:
-                #     Puddle(0, -145)
-
-        # Update
-        for elem in cleaners:
-            elem.move()
-
-        camera.update(cockroach)
-        # обновляем положение всех спрайтов
-        for sprite in all_sprites:
-            camera.apply(sprite)
-        if cockroach.colllision():
-            game = False
-            score -= 1
-            all_results.append(score)
-        # Draw
-        all_sprites.draw(screen)
-        screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
-        text = font.render(f'{str(score)}', True, (255, 0, 0))
-        screen.blit(text, (375, 0))
-        pygame.display.flip()
-        fpsClock.tick(fps)
-
-    width, height = 450, 450
-    screen = pygame.display.set_mode((width, height))
-
-    fon = pygame.image.load('floor.jpg')
-    fon = pygame.transform.scale(fon, (450, 450))
-    screen.blit(fon, (0, 0))
-
-    restart = pygame.image.load('restart.png').convert_alpha()
-    restart = pygame.transform.scale(restart, (144, 144))
-    screen.blit(restart, (153, 225))
-
-    font = pygame.font.Font(None, 40)
-
-    text = font.render(f'Ваш результат: {str(score)}', True, (255, 0, 0))
-    screen.blit(text, (120, 60))
-
-    text2 = font.render(f'Лучший результат: {str(max(all_results))}', True, (255, 0, 0))
-    screen.blit(text2, (100, 100))
-
+while True:
     for event in pygame.event.get():
         if event.type == QUIT:
-            next_wind = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = event.pos
-            x_pos = pos[0]
-            y_pos = pos[1]
-            if 297 >= x_pos and x_pos >= 153 and y_pos >= 225 and y_pos <= 369:
-                print('ckicked')
-                game = True
-                width, height = 750, 750
-                score = 0
-                screen = pygame.display.set_mode((width, height))
-                screen.fill('white')
-                cleaners = []
-                start_fon()
+            pygame.quit()
+            sys.exit()
+
+    # Update
+
+    # Draw
+    all_sprites.draw(screen)
     pygame.display.flip()
     fpsClock.tick(fps)
