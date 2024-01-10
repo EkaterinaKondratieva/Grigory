@@ -19,9 +19,9 @@ class Cleaner(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
-        self.image = pygame.image.load('cleaner.jpeg')
+        self.image = pygame.image.load('new_cleaner.png')
 
-        self.image = pygame.transform.scale(self.image, (160, 160))
+        self.image = pygame.transform.scale(self.image, (150, 150))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.x = x
@@ -48,8 +48,18 @@ class Carpet(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-class Slipers(pygame.sprite.Sprite):
-    pass
+class Puddle(pygame.sprite.Sprite):
+
+    def __init__(self, x, y):
+        super().__init__(all_sprites)
+        self.image = pygame.image.load('puddle.png')
+        self.image = pygame.transform.scale(self.image, (750, 150))
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = y
+
+
+# если мы умрём, то похороните нас на Мальдивах
 
 
 class Cockroach(pygame.sprite.Sprite):
@@ -93,8 +103,9 @@ def start_fon():
         elif num == 1:
             Floor(0, 150 * i)
             cleaners.append(Cleaner(0, 150 * i))
-        # else:
-        #     Puddle(0, 145 * i)
+        else:
+            Floor(0, 150 * i)
+            Puddle(0, 145 * i)
         Floor(0, 150 * 3)
         Floor(0, 150 * 4)
 
@@ -160,8 +171,9 @@ while next_wind:
                     cleaners.append(Cleaner(0, -150))
                 elif num == 4:
                     Floor(0, -150)
-                # else:
-                #     Puddle(0, -145)
+                else:
+                    Floor(0, -150)
+                    Puddle(0, -145)
 
         # Update
         for elem in cleaners:
@@ -221,4 +233,3 @@ while next_wind:
                 start_fon()
     pygame.display.flip()
     fpsClock.tick(fps)
-
