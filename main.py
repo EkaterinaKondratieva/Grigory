@@ -33,14 +33,15 @@ class Cleaner(pygame.sprite.Sprite):
 
 
 class Puddle(pygame.sprite.Sprite):
-
     def __init__(self, x, y):
         super().__init__(all_sprites)
         self.image = pygame.image.load('puddle.png')
         self.image.set_colorkey('white')
+        self.image = pygame.transform.scale(self.image, (750, 150))
         self.rect = self.image.get_rect()
-        self.x = 0
-        self.y = y
+        self.rect.x = 0
+        self.rect.y = y
+
     # если мы умрём, то похороните нас на Мальдивах
 
 
@@ -90,16 +91,16 @@ def start_fon():
         num = random.choice([1, 2, 3])
         # 1 cleaner
         # 2 puddle
-        # 3 slipers
+        # 3 slippers
         print(num)
         if num == 3:
             Slippers(0, 150 * i)
         elif num == 1:
             Floor(0, 150 * i)
             cleaners.append(Cleaner(0, 150 * i))
-
-        # else:
-        #     Puddle(0, 145 * i)
+        else:
+            Floor(0, 150 * i)
+            Puddle(0, 150 * i)
         Floor(0, 150 * 3)
         Floor(0, 150 * 4)
 
@@ -147,7 +148,6 @@ while True:
             # 1 cleaner
             # 2 puddle
             # 3 slipers
-
             if num == 3:
                 Slippers(0, -150)
             elif num == 2:
@@ -156,8 +156,7 @@ while True:
             elif num == 1:
                 Floor(0, -150)
                 cleaners.append(Cleaner(0, -150))
-            # else:
-            #     Puddle(0, -145)
+            print(num)
 
     # Update
     for elem in cleaners:
