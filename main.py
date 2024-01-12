@@ -20,39 +20,34 @@ class Cleaner(pygame.sprite.Sprite):
         self.сleaners_in_line = []
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
+        self.image = pygame.sprite.Sprite()
         self.image = pygame.image.load('cleaner.jpeg')
         self.image = pygame.transform.scale(self.image, (160, 160))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
+        self.pixel_rect = self.image.get_bounding_rect()
+        self.trimmed_surface = pygame.Surface(self.pixel_rect.size)
+        self.trimmed_surface.blit(self.image, (0, 0), self.pixel_rect)
         self.x = x
         self.y = y
         self.rect.center = (-75, self.y + 75)
         self.mask = pygame.mask.from_surface(self.image)
-        sprite = self.image
-        self.сleaners_in_line.append(sprite)
+        # Polina is very very angry, she is scaring me. Help us please, we don't wanna die...I mean, we do, but noooo
+        self.сleaners_in_line.append(self.image)
         self.next_cleaner = random.choice([2, 3, 4]) * 1000
 
     def move(self):
-        for i in range(len(self.сleaners_in_line)):
-            if i == 0:
-                if pygame.time.get_ticks() - self.time >= self.start:
-                    self.rect.x += 3
-                if pygame.time.get_ticks() - self.time >= self.next_cleaner:
-                    self.time = pygame.time.get_ticks()
-                    self.next_cleaner = random.choice([2, 3, 4]) * 1000
-                    self.new_cleaner()
-            else:
-                self.rect.x += 3
+        self.rect.x += 3
 
     def new_cleaner(self):
+        # print('new_cleaner')
         new = pygame.image.load('cleaner.jpeg')
         new = pygame.transform.scale(new, (160, 160))
         new.set_colorkey('white')
         new_rect = new.get_rect()
         top_right = (self.x, self.y)
-        self.сleaners_in_line.append(new)
-        print(self.сleaners_in_line)
-        screen.blit(new, top_right)
+        self.сleaners_in_line.insert(0, new)
+
 
 class Puddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -84,8 +79,11 @@ class Cockroach(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         self.image = pygame.image.load('cockroach.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (146, 140))
-        self.image.set_colorkey('white')
+        # self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
+        self.pixel_rect = self.image.get_bounding_rect()
+        self.trimmed_surface = pygame.Surface(self.pixel_rect.size)
+        self.trimmed_surface.blit(self.image, (0, 0), self.pixel_rect)
         self.rect.topleft = (302, 455)
         self.x = 302
         self.y = 455
@@ -195,6 +193,7 @@ while next_wind:
         # Update
         for elem in cleaners:
             elem.move()
+
         camera.update(cockroach)
         # обновляем положение всех спрайтов
         for sprite in all_sprites:
@@ -203,6 +202,7 @@ while next_wind:
             game = False
             score -= 1
             all_results.append(score)
+
         # Draw
         all_sprites.draw(screen)
         screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
