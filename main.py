@@ -141,6 +141,11 @@ class Camera:
         self.dy = -(target.rect.y + target.rect.h // 2 - height / 5 * 3 - 75)
 
 
+def restart():
+    pygame.draw.rect(screen, 'white', ((150, 150), (450, 450)), width=0)
+    pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
+
+
 pygame.init()
 fps = 60
 fpsClock = pygame.time.Clock()
@@ -163,7 +168,6 @@ all_results = []
 game = True
 next_wind = True
 while next_wind:
-    pygame.display.update()
     while game:
         screen.fill('white')
         for event in pygame.event.get():
@@ -198,9 +202,9 @@ while next_wind:
         # обновляем положение всех спрайтов
         for sprite in all_sprites:
             camera.apply(sprite)
+
         if cockroach.colllision():
             game = False
-            score -= 1
             all_results.append(score)
 
         # Draw
@@ -212,25 +216,21 @@ while next_wind:
         pygame.display.flip()
         fpsClock.tick(fps)
 
-    width, height = 450, 450
-    screen = pygame.display.set_mode((width, height))
+    restart()
 
-    fon = pygame.image.load('floor.jpg')
-    fon = pygame.transform.scale(fon, (450, 450))
-    screen.blit(fon, (0, 0))
-
-    restart = pygame.image.load('restart.png').convert_alpha()
-    restart = pygame.transform.scale(restart, (144, 144))
-    screen.blit(restart, (153, 225))
+    #
+    restart_button = pygame.image.load('restart.png').convert_alpha()
+    restart_button = pygame.transform.scale(restart_button, (144, 144))
+    screen.blit(restart_button, (303, 375))
 
     font = pygame.font.Font(None, 40)
 
-    text = font.render(f'Ваш результат: {str(score)}', True, (255, 0, 0))
-    screen.blit(text, (120, 60))
-
-    text2 = font.render(f'Лучший результат: {str(max(all_results))}', True, (255, 0, 0))
-    screen.blit(text2, (100, 100))
-
+    text = font.render(f'Ваш результат: {str(score)}', True, (0, 0, 0))
+    screen.blit(text, (150 + 100, 350 - 110))
+    #
+    text2 = font.render(f'Лучший результат: {str(max(all_results))}', True, (0, 0, 0))
+    screen.blit(text2, (240, 300))
+    #
     for event in pygame.event.get():
         if event.type == QUIT:
             next_wind = False
@@ -238,7 +238,7 @@ while next_wind:
             pos = event.pos
             x_pos = pos[0]
             y_pos = pos[1]
-            if 297 >= x_pos and x_pos >= 153 and y_pos >= 225 and y_pos <= 369:
+            if 303 + 144 >= x_pos and x_pos >= 303 and y_pos >= 375 and y_pos <= 375 + 144:
                 print('ckicked')
                 game = True
                 width, height = 750, 750
