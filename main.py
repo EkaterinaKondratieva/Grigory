@@ -19,9 +19,9 @@ class Cleaner(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
-        self.image = pygame.image.load('new_cleaner.png')
+        self.image = pygame.image.load('cleaner.jpeg')
 
-        self.image = pygame.transform.scale(self.image, (150, 150))
+        self.image = pygame.transform.scale(self.image, (160, 160))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.x = x
@@ -35,7 +35,15 @@ class Cleaner(pygame.sprite.Sprite):
 
 
 class Puddle(pygame.sprite.Sprite):
-    pass
+    def __init__(self, x, y):
+        super().__init__(all_sprites)
+        self.image = pygame.image.load('puddle.png')
+        self.image.set_colorkey('white')
+        self.image = pygame.transform.scale(self.image, (750, 150))
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = y
+
 
 
 class Carpet(pygame.sprite.Sprite):
@@ -48,18 +56,8 @@ class Carpet(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-class Puddle(pygame.sprite.Sprite):
-
-    def __init__(self, x, y):
-        super().__init__(all_sprites)
-        self.image = pygame.image.load('puddle.png')
-        self.image = pygame.transform.scale(self.image, (750, 150))
-        self.rect = self.image.get_rect()
-        self.rect.x = 0
-        self.rect.y = y
-
-
-# если мы умрём, то похороните нас на Мальдивах
+class Slipers(pygame.sprite.Sprite):
+    pass
 
 
 class Cockroach(pygame.sprite.Sprite):
@@ -173,12 +171,11 @@ while next_wind:
                     Floor(0, -150)
                 else:
                     Floor(0, -150)
-                    Puddle(0, -145)
+                    Carpet(0, -150)
 
         # Update
         for elem in cleaners:
             elem.move()
-
         camera.update(cockroach)
         # обновляем положение всех спрайтов
         for sprite in all_sprites:
