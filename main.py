@@ -15,11 +15,8 @@ class Floor(pygame.sprite.Sprite):
 
 
 class Cleaner(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, move, group):
         super().__init__(all_sprites)
-        self.сleaners_in_line = []
-        self.time = pygame.time.get_ticks()
-        self.start = random.choice([0, 2, 1, 3]) * 1000
         self.image = pygame.sprite.Sprite()
         self.image = pygame.image.load('cleaner.jpeg')
         self.image = pygame.transform.scale(self.image, (160, 160))
@@ -29,21 +26,15 @@ class Cleaner(pygame.sprite.Sprite):
         self.y = y
         self.rect.center = (-75, self.y + 75)
         self.mask = pygame.mask.from_surface(self.image)
-        # Polina is very very angry, she is scaring me. Help us please, we don't wanna die...I mean, we do, but noooo
-        self.сleaners_in_line.append(self.image)
-        self.next_cleaner = random.choice([2, 3, 4]) * 1000
+        self.time = pygame.time.get_ticks()
+        self.start = random.choice([0, 2, 1, 3]) * 1000
+        self.add(group)
 
-    def move(self):
-        self.rect.x += 3
-
-    def new_cleaner(self):
-        # print('new_cleaner')
-        new = pygame.image.load('cleaner.jpeg')
-        new = pygame.transform.scale(new, (160, 160))
-        new.set_colorkey('white')
-        new_rect = new.get_rect()
-        top_right = (self.x, self.y)
-        self.сleaners_in_line.insert(0, new)
+    def update(self, *args):
+        if self.rect.x <= 750 + 160:
+            self.rect.x += 3
+        else:
+            self.rect.x = -160
 
 
 class Puddle(pygame.sprite.Sprite):
@@ -112,7 +103,10 @@ def start_fon():
             # Slipers(0, 150 * i)
         elif num == 1:
             Floor(0, 150 * i)
-            cleaners.append(Cleaner(0, 150 * i))
+            (Cleaner(0, 150 * i, 0, cleaners))
+            type_of_line_cleaners = random.choice([1, 2, 3])
+            # if type_of_line_cleaners == 1:
+
         else:
             Floor(0, 150 * i)
             Puddle(0, 145 * i)
@@ -155,7 +149,7 @@ width, height = 750, 750
 screen = pygame.display.set_mode((width, height))
 all_sprites = pygame.sprite.Group()
 
-cleaners = []
+cleaners = pygame.sprite.Group()
 
 start_fon()
 
@@ -188,28 +182,23 @@ while next_wind:
                 # 4 floor
                 if num == 1:
                     Floor(0, -150)
-                    cleaners.append(Cleaner(0, -150))
+                    (Cleaner(0, -150, 0, cleaners))
+
                 elif num == 2:
                     Floor(0, -150)
                     Carpet(0, -150)
                 elif num == 3:
                     Carpet(0, -150)
                     # Slipers(0, -150)
-                elif num == 1:
-                    Floor(0, -150)
-                    cleaners.append(Cleaner(0, -150))
                 elif num == 4:
                     Floor(0, -150)
 
         # Update
-        for elem in cleaners:
-            elem.move()
-
+        cleaners.update()
         camera.update(cockroach)
         # обновляем положение всех спрайтов
         for sprite in all_sprites:
             camera.apply(sprite)
-
         if cockroach.colllision():
             game = False
             fail_sound.play(0)
@@ -219,7 +208,6 @@ while next_wind:
         all_sprites.draw(screen)
         screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
         text = font.render(str(score), True, (255, 0, 0))
-        text = font.render(f'{str(score)}', True, (255, 0, 0))
         screen.blit(text, (375, 0))
         pygame.display.flip()
         fpsClock.tick(fps)
@@ -255,7 +243,7 @@ while next_wind:
                 score = 0
                 screen = pygame.display.set_mode((width, height))
                 screen.fill('white')
-                cleaners = []
+                cleaners = pygame.sprite.Group()
                 start_fon()
                 fail_sound.stop()
                 pygame.mixer.music.play(loops=-1, start=0.0, fade_ms=0)
