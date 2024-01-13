@@ -15,7 +15,7 @@ class Floor(pygame.sprite.Sprite):
 
 
 class Cleaner(pygame.sprite.Sprite):
-    def __init__(self, x, y, move, group):
+    def __init__(self, x, y, group):
         super().__init__(all_sprites)
         self.image = pygame.sprite.Sprite()
         self.image = pygame.image.load('cleaner.jpeg')
@@ -24,7 +24,7 @@ class Cleaner(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.rect.center = (-75, self.y + 75)
+        self.rect.center = (x - 75, self.y + 75)
         self.mask = pygame.mask.from_surface(self.image)
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
@@ -90,6 +90,20 @@ class Cockroach(pygame.sprite.Sprite):
                 break
         return game_over
 
+def cleaners_in_line(x, y, type):
+    if type == 1:
+        Cleaner(x - 150, y, cleaners)
+        Cleaner(x - 400, y, cleaners)
+        Cleaner(x - 700, y, cleaners)
+    elif type == 2:
+        Cleaner(x - 300, y, cleaners)
+        Cleaner(x - 600, y, cleaners)
+        Cleaner(x - 750, y, cleaners)
+    else:
+        Cleaner(x - 150, y, cleaners)
+        Cleaner(x - 310, y, cleaners)
+        Cleaner(x - 750, y, cleaners)
+
 
 def start_fon():
     for i in range(3):
@@ -103,10 +117,9 @@ def start_fon():
             # Slipers(0, 150 * i)
         elif num == 1:
             Floor(0, 150 * i)
-            (Cleaner(0, 150 * i, 0, cleaners))
-            type_of_line_cleaners = random.choice([1, 2, 3])
-            # if type_of_line_cleaners == 1:
-
+            (Cleaner(0, 150 * i,  cleaners))
+            type = random.choice([1, 2, 3])
+            cleaners_in_line(0, 150 * i, 2)
         else:
             Floor(0, 150 * i)
             Puddle(0, 145 * i)
@@ -128,6 +141,7 @@ class Camera:
     def update(self, target):
         self.dx = 0
         self.dy = -(target.rect.y + target.rect.h // 2 - height / 5 * 3 - 75)
+
 
 
 def restart():
@@ -182,11 +196,12 @@ while next_wind:
                 # 4 floor
                 if num == 1:
                     Floor(0, -150)
-                    (Cleaner(0, -150, 0, cleaners))
-
+                    (Cleaner(0, -150, cleaners))
+                    type = random.choice([1, 2, 3])
+                    cleaners_in_line(0, -150, 2)
                 elif num == 2:
                     Floor(0, -150)
-                    Carpet(0, -150)
+                    Puddle(0, -150)
                 elif num == 3:
                     Carpet(0, -150)
                     # Slipers(0, -150)
