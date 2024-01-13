@@ -25,9 +25,6 @@ class Cleaner(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (160, 160))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
-        self.pixel_rect = self.image.get_bounding_rect()
-        self.trimmed_surface = pygame.Surface(self.pixel_rect.size)
-        self.trimmed_surface.blit(self.image, (0, 0), self.pixel_rect)
         self.x = x
         self.y = y
         self.rect.center = (-75, self.y + 75)
@@ -79,7 +76,6 @@ class Cockroach(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         self.image = pygame.image.load('cockroach.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (146, 140))
-        # self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
         self.pixel_rect = self.image.get_bounding_rect()
         self.trimmed_surface = pygame.Surface(self.pixel_rect.size)
@@ -110,7 +106,6 @@ def start_fon():
         # 1 cleaner
         # 2 puddle
         # 3 slipers
-
         print(num)
         if num == 3:
             Carpet(0, 150 * i)
@@ -161,7 +156,9 @@ cockroach = Cockroach()
 
 camera = Camera()
 
-font = pygame.font.Font(None, 50)
+pygame.font.init()
+font = pygame.font.SysFont('comicsansms', 35)
+
 score = 0
 
 all_results = []
@@ -182,7 +179,13 @@ while next_wind:
                 # 2 puddle
                 # 3 slipers
                 # 4 floor
-                if num == 3:
+                if num == 1:
+                    Floor(0, -150)
+                    cleaners.append(Cleaner(0, -150))
+                elif num == 2:
+                    Floor(0, -150)
+                    Carpet(0, -150)
+                elif num == 3:
                     Carpet(0, -150)
                     # Slipers(0, -150)
                 elif num == 1:
@@ -190,9 +193,6 @@ while next_wind:
                     cleaners.append(Cleaner(0, -150))
                 elif num == 4:
                     Floor(0, -150)
-                else:
-                    Floor(0, -150)
-                    Carpet(0, -150)
 
         # Update
         for elem in cleaners:
@@ -216,20 +216,19 @@ while next_wind:
         pygame.display.flip()
         fpsClock.tick(fps)
 
+    #######
     restart()
-
-    #
     restart_button = pygame.image.load('restart.png').convert_alpha()
     restart_button = pygame.transform.scale(restart_button, (144, 144))
     screen.blit(restart_button, (303, 375))
 
-    font = pygame.font.Font(None, 40)
+    font = pygame.font.SysFont('comicsansms', 35)
 
     text = font.render(f'Ваш результат: {str(score)}', True, (0, 0, 0))
-    screen.blit(text, (150 + 100, 350 - 110))
+    screen.blit(text, (150 + 80, 350 - 110))
     #
     text2 = font.render(f'Лучший результат: {str(max(all_results))}', True, (0, 0, 0))
-    screen.blit(text2, (240, 300))
+    screen.blit(text2, (200, 300))
     #
     for event in pygame.event.get():
         if event.type == QUIT:
