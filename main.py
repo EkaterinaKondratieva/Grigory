@@ -141,7 +141,14 @@ def restart():
     pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
 
 
+pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
+
+pygame.mixer.music.load('music.mp3')
+pygame.mixer.music.play(loops=-1, start=0.0, fade_ms=0)
+pygame.mixer.music.set_volume(0.2)
+
+fail_sound = pygame.mixer.Sound('fail.wav')
 fps = 60
 fpsClock = pygame.time.Clock()
 width, height = 750, 750
@@ -205,6 +212,7 @@ while next_wind:
 
         if cockroach.colllision():
             game = False
+            fail_sound.play(0)
             all_results.append(score)
 
         # Draw
@@ -217,7 +225,10 @@ while next_wind:
         fpsClock.tick(fps)
 
     #######
+    pygame.mixer.music.stop()
+
     restart()
+
     restart_button = pygame.image.load('restart.png').convert_alpha()
     restart_button = pygame.transform.scale(restart_button, (144, 144))
     screen.blit(restart_button, (303, 375))
@@ -246,5 +257,8 @@ while next_wind:
                 screen.fill('white')
                 cleaners = []
                 start_fon()
+                fail_sound.stop()
+                pygame.mixer.music.play(loops=-1, start=0.0, fade_ms=0)
+
     pygame.display.flip()
     fpsClock.tick(fps)
