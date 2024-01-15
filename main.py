@@ -40,13 +40,19 @@ class Cleaner(pygame.sprite.Sprite):
 class Puddle(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
+        self.image = pygame.sprite.Sprite()
         self.image = pygame.image.load('puddle.png')
         self.image.set_colorkey('white')
         self.image = pygame.transform.scale(self.image, (750, 150))
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = y
-ses     self.add(puddles)
+        self.add(puddles)
+    # def get_collision(self):
+    #     if pygame.sprite.collide_mask(puddles, cockroach):
+    #         return pygame.time.get_ticks()
+    #     return False
+
 
 class Carpet(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -224,7 +230,8 @@ def hello_screen():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                terminate()
+                pygame.quit()
+                sys.exit()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 return
         pygame.display.flip()
@@ -295,7 +302,7 @@ while next_wind:
                     Floor(0, -150)
                     (Cleaner(0, -150, cleaners))
                     type = random.choice([1, 2, 3])
-                    cleaners_in_line(0, -150, 2)
+                    cleaners_in_line(0, -150, type)
                 elif num == 2:
                     Floor(0, -150)
                     (Puddle(0, -150))
@@ -315,7 +322,7 @@ while next_wind:
         # обновляем положение всех спрайтов
         for sprite in all_sprites:
             camera.apply(sprite)
-        if cockroach.collision_cleaner() or cockroach.collision_left() or cockroach.collision_right():
+        if cockroach.colllision():
             game = False
             fail_sound.play(0)
             all_results.append(score)
