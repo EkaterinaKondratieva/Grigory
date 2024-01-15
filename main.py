@@ -152,17 +152,20 @@ class Cockroach(pygame.sprite.Sprite):
 
 def cleaners_in_line(x, y, type):
     if type == 1:
-        Cleaner(x - 150, y, cleaners)
-        Cleaner(x - 400, y, cleaners)
-        Cleaner(x - 700, y, cleaners)
+        Cleaner(x - 100, y, cleaners)
+        Cleaner(x - 260, y, cleaners)
+        Cleaner(x - 560, y, cleaners)
+        Cleaner(x - 820, y, cleaners)
     elif type == 2:
-        Cleaner(x - 300, y, cleaners)
-        Cleaner(x - 600, y, cleaners)
-        Cleaner(x - 750, y, cleaners)
+        Cleaner(x - 200, y, cleaners)
+        Cleaner(x - 420, y, cleaners)
+        Cleaner(x - 580, y, cleaners)
+        Cleaner(x - 840, y, cleaners)
     else:
-        Cleaner(x - 150, y, cleaners)
-        Cleaner(x - 310, y, cleaners)
-        Cleaner(x - 750, y, cleaners)
+        Cleaner(x - 160, y, cleaners)
+        Cleaner(x - 350, y, cleaners)
+        Cleaner(x - 550, y, cleaners)
+        Cleaner(x - 840, y, cleaners)
 
 
 def start_fon():
@@ -300,9 +303,9 @@ while next_wind:
                 # 4 floor
                 if num == 1:
                     Floor(0, -150)
-                    (Cleaner(0, -150, cleaners))
+                    (Cleaner(50, -150, cleaners))
                     type = random.choice([1, 2, 3])
-                    cleaners_in_line(0, -150, type)
+                    cleaners_in_line(750, -150, type)
                 elif num == 2:
                     Floor(0, -150)
                     (Puddle(0, -150))
