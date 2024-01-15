@@ -48,10 +48,6 @@ class Puddle(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = y
         self.add(puddles)
-    # def get_collision(self):
-    #     if pygame.sprite.collide_mask(puddles, cockroach):
-    #         return pygame.time.get_ticks()
-    #     return False
 
 
 class Carpet(pygame.sprite.Sprite):
@@ -174,7 +170,8 @@ def hello_screen():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                terminate()
+                pygame.quit()
+                sys.exit()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 return
         pygame.display.flip()
@@ -237,7 +234,7 @@ while next_wind:
                     Floor(0, -150)
                     (Cleaner(0, -150, cleaners))
                     type = random.choice([1, 2, 3])
-                    cleaners_in_line(0, -150, 2)
+                    cleaners_in_line(0, -150, type)
                 elif num == 2:
                     Floor(0, -150)
                     (Puddle(0, -150))
@@ -298,7 +295,6 @@ while next_wind:
             x_pos = pos[0]
             y_pos = pos[1]
             if 303 + 144 >= x_pos and x_pos >= 303 and y_pos >= 375 and y_pos <= 375 + 144:
-                print('ckicked')
                 game = True
                 width, height = 750, 750
                 score = 0
