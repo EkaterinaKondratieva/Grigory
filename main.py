@@ -113,6 +113,9 @@ def cleaners_in_line(x, y, type):
 
 
 def start_fon():
+    pygame.mixer.music.load('music.mp3')
+    pygame.mixer.music.play(loops=-1, start=0.0, fade_ms=0)
+    pygame.mixer.music.set_volume(0.2)
     for i in range(3):
         num = random.choice([1, 2, 3])
         # 1 cleaner
@@ -153,13 +156,32 @@ def restart():
     pygame.draw.rect(screen, 'white', ((150, 150), (450, 450)), width=0)
     pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
 
+def hello_screen():
+    screen.fill('white')
+    font = pygame.font.SysFont('comicsansms', 35)
+
+    text = font.render('Правила игры:', True, (0, 0, 0))
+    screen.blit(text, (250, 300))
+
+    text2 = font.render('1) Под пылесосы попадать нельзя', True, (0, 0, 0))
+    screen.blit(text2, (90, 350))
+
+    text3 = font.render('2) На лужах нельзя долго стоять', True, (0, 0, 0))
+    screen.blit(text3, (100, 400))
+
+    text4 = font.render('3) Если попадаешь под спрей - умираешь', True, (0, 0, 0))
+    screen.blit(text4, (25, 450))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                return
+        pygame.display.flip()
+        fpsClock.tick(fps)
 
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
-
-pygame.mixer.music.load('music.mp3')
-pygame.mixer.music.play(loops=-1, start=0.0, fade_ms=0)
-pygame.mixer.music.set_volume(0.2)
 
 fail_sound = pygame.mixer.Sound('fail.wav')
 fps = 60
@@ -170,6 +192,8 @@ all_sprites = pygame.sprite.Group()
 
 cleaners = pygame.sprite.Group()
 puddles = pygame.sprite.Group()
+
+hello_screen()
 
 start_fon()
 
@@ -244,7 +268,7 @@ while next_wind:
         # Draw
         all_sprites.draw(screen)
         screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
-        text = font.render(str(score), True, (255, 0, 0))
+        text = font.render(str(score), True, (0, 0, 0))
         screen.blit(text, (375, 0))
         pygame.display.flip()
         fpsClock.tick(fps)
