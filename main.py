@@ -155,6 +155,7 @@ def restart():
     pygame.draw.rect(screen, 'white', ((150, 150), (450, 450)), width=0)
     pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
 
+
 def hello_screen():
     screen.fill('white')
     font = pygame.font.SysFont('comicsansms', 35)
@@ -179,6 +180,7 @@ def hello_screen():
                 return
         pygame.display.flip()
         fpsClock.tick(fps)
+
 
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
