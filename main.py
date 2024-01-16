@@ -10,21 +10,21 @@ class Floor(pygame.sprite.Sprite):
         self.image = pygame.image.load('floor.jpg')
         self.image = pygame.transform.scale(self.image, (750, 150))
         self.rect = self.image.get_rect()
-        self.rect.x = 0
+        self.rect.x = x
         self.rect.y = y
 
 
 class Cleaner(pygame.sprite.Sprite):
-    def __init__(self, x, y, move, group):
+    def __init__(self, x, y, group):
         super().__init__(all_sprites)
         self.image = pygame.sprite.Sprite()
-        self.image = pygame.image.load('cleaner.jpeg')
-        self.image = pygame.transform.scale(self.image, (160, 160))
+        self.image = pygame.image.load('new_cleaner.png')
+        self.image = pygame.transform.scale(self.image, (120, 120))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.rect.center = (-75, self.y + 75)
+        self.rect.center = (x - 75, self.y + 75)
         self.mask = pygame.mask.from_surface(self.image)
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
@@ -48,10 +48,6 @@ class Puddle(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = y
         self.add(puddles)
-    # def get_collision(self):
-    #     if pygame.sprite.collide_mask(puddles, cockroach):
-    #         return pygame.time.get_ticks()
-    #     return False
 
 
 class Carpet(pygame.sprite.Sprite):
@@ -60,51 +56,30 @@ class Carpet(pygame.sprite.Sprite):
         self.image = pygame.image.load('carpet.jpeg')
         self.image = pygame.transform.scale(self.image, (750, 150))
         self.rect = self.image.get_rect()
-        self.rect.x = 0
+        self.rect.x = x
         self.rect.y = y
 
 
-# class Left_slipper(pygame.sprite.Sprite):
-#     def __init__(self, x, y, group):
-#         super().__init__(all_sprites)
-#         self.image = pygame.sprite.Sprite()
-#         self.image = pygame.image.load('left_slipper.png')
-#         self.image.set_colorkey('white')
-#         self.rect = self.image.get_rect()
-#         self.x = x
-#         self.y = y
-#         self.rect.center = (self.x, self.y + 75)
-#         self.mask = pygame.mask.from_surface(self.image)
-#         self.time = pygame.time.get_ticks()
-#         self.start = random.choice([0, 2, 1, 3]) * 1000
-#         self.add(group)
-#
-#     def update(self, *args):
-#         if self.rect.x <= 750:
-#             self.rect.x -= 1
-#         else:
-#             self.rect.x = -50
-
-
-class Right_slipper(pygame.sprite.Sprite):
+class Gas(pygame.sprite.Sprite):
     def __init__(self, x, y, group):
         super().__init__(all_sprites)
+        self.image = pygame.sprite.Sprite()
         self.image = pygame.image.load('gas.png')
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.rect.center = (self.x, self.y + 75)
+        self.rect.center = (x, y + 75)
         self.mask = pygame.mask.from_surface(self.image)
         self.time = pygame.time.get_ticks()
         self.start = random.choice([0, 2, 1, 3]) * 1000
         self.add(group)
 
     def update(self, *args):
-        if self.rect.x <= 750:
-            self.rect.x -= 1
+        if self.rect.x >= 0 - 300:
+            self.rect.x -= 5
         else:
-            self.rect.x = -50
+            self.rect.x += 1200
 
 
 class Cockroach(pygame.sprite.Sprite):
@@ -134,38 +109,30 @@ class Cockroach(pygame.sprite.Sprite):
                 game_over = True
                 break
         return game_over
-    def collision_left(self):
+
+    def collision_gas(self):
         game_over = False
-        for elem in cleaners:
+        for elem in gas:
             if pygame.sprite.collide_mask(self, elem):
                 game_over = True
                 break
         return game_over
 
-    def collision_right(self):
-        game_over = False
-        for elem in right_slip:
-            if pygame.sprite.collide_mask(self, elem):
-                game_over = True
-                break
-        return game_over
 
 def cleaners_in_line(x, y, type):
     if type == 1:
-        Cleaner(x - 100, y, cleaners)
-        Cleaner(x - 260, y, cleaners)
-        Cleaner(x - 560, y, cleaners)
-        Cleaner(x - 820, y, cleaners)
+        Cleaner(x - 160, y, cleaners)
+        Cleaner(x - 500, y, cleaners)
+        Cleaner(x - 830, y, cleaners)
     elif type == 2:
         Cleaner(x - 200, y, cleaners)
-        Cleaner(x - 420, y, cleaners)
-        Cleaner(x - 580, y, cleaners)
-        Cleaner(x - 840, y, cleaners)
+        Cleaner(x - 520, y, cleaners)
+        Cleaner(x - 890, y, cleaners)
     else:
-        Cleaner(x - 160, y, cleaners)
         Cleaner(x - 350, y, cleaners)
-        Cleaner(x - 550, y, cleaners)
-        Cleaner(x - 840, y, cleaners)
+        Cleaner(x, y, cleaners)
+        Cleaner(x - 500, y, cleaners)
+
 
 
 def start_fon():
@@ -174,23 +141,17 @@ def start_fon():
     pygame.mixer.music.set_volume(0.2)
     for i in range(3):
         num = random.choice([1, 2, 3])
-        # 1 cleaner
-        # 2 puddle
-        # 3 slipers
-        print(num)
-        if num == 3:
-            Carpet(0, 150 * i)
-            # Left_slipper(700, 150 * i, left_slip)
-            Right_slipper(650, 150 * i, right_slip)
-        elif num == 1:
+        if num == 1:
             Floor(0, 150 * i)
-            (Cleaner(0, 150 * i, 0, cleaners))
-            (Cleaner(0, 150 * i, cleaners))
+            Cleaner(0, 150 * i, cleaners)
             type = random.choice([1, 2, 3])
-            cleaners_in_line(0, 150 * i, 2)
+            cleaners_in_line(0, 150 * i, type)
+        elif num == 3:
+            Carpet(0, 150 * i)
+            Gas(0, 150 * i, gas)
         else:
             Floor(0, 150 * i)
-            Puddle(0, 145 * i)
+            (Puddle(0, 145 * i))
         Floor(0, 150 * 3)
         Floor(0, 150 * 4)
 
@@ -214,6 +175,7 @@ class Camera:
 def restart():
     pygame.draw.rect(screen, 'white', ((150, 150), (450, 450)), width=0)
     pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
+
 
 def hello_screen():
     screen.fill('white')
@@ -240,6 +202,7 @@ def hello_screen():
         pygame.display.flip()
         fpsClock.tick(fps)
 
+
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
 
@@ -251,11 +214,10 @@ screen = pygame.display.set_mode((width, height))
 all_sprites = pygame.sprite.Group()
 
 cleaners = pygame.sprite.Group()
-left_slip = pygame.sprite.Group()
-right_slip = pygame.sprite.Group()
+gas = pygame.sprite.Group()
 puddles = pygame.sprite.Group()
-
 hello_screen()
+
 start_fon()
 
 cockroach = Cockroach()
@@ -285,21 +247,15 @@ while next_wind:
                         time = pygame.time.get_ticks()
                         have_collision_with_puddle = True
                         break
-                else:
-                    have_collision_with_puddle = False
-                for puddle in puddles:
-                    if pygame.sprite.collide_mask(puddle, cockroach):
-                        time = pygame.time.get_ticks()
-                        have_collision_with_puddle = True
-                        break
-                else:
-                    have_collision_with_puddle = False
+
+                    else:
+                        have_collision_with_puddle = False
 
                 score += 1
                 num = random.choice([1, 2, 3, 4])
                 # 1 cleaner
                 # 2 puddle
-                # 3 slipers
+                # 3 gas
                 # 4 floor
                 if num == 1:
                     Floor(0, -150)
@@ -311,25 +267,21 @@ while next_wind:
                     (Puddle(0, -150))
                 elif num == 3:
                     Carpet(0, -150)
-                    #Left_slipper(700, -150, left_slip)
-                    Right_slipper(650, -150, right_slip)
+                    Gas(650, -150, gas)
                 elif num == 4:
                     Floor(0, -150)
 
         # Update
         cleaners.update()
-        left_slip.update()
-        right_slip.update()
-
+        gas.update()
         camera.update(cockroach)
         # обновляем положение всех спрайтов
         for sprite in all_sprites:
             camera.apply(sprite)
-        if cockroach.colllision():
+        if cockroach.collision_cleaner() or cockroach.collision_gas():
             game = False
             fail_sound.play(0)
             all_results.append(score)
-
         if have_collision_with_puddle:
             if pygame.time.get_ticks() - time >= 3000:
                 game = False
@@ -369,15 +321,13 @@ while next_wind:
             x_pos = pos[0]
             y_pos = pos[1]
             if 303 + 144 >= x_pos and x_pos >= 303 and y_pos >= 375 and y_pos <= 375 + 144:
-                print('ckicked')
                 game = True
                 width, height = 750, 750
                 score = 0
                 screen = pygame.display.set_mode((width, height))
                 screen.fill('white')
                 cleaners = pygame.sprite.Group()
-                left_slip = pygame.sprite.Group()
-                right_slip = pygame.sprite.Group()
+                gas = pygame.sprite.Group()
                 puddles = pygame.sprite.Group()
                 have_collision_with_puddle = False
                 start_fon()
