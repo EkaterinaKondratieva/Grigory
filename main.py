@@ -10,7 +10,7 @@ class Floor(pygame.sprite.Sprite):
         self.image = pygame.image.load('floor.jpg')
         self.image = pygame.transform.scale(self.image, (750, 150))
         self.rect = self.image.get_rect()
-        self.rect.x = 0
+        self.rect.x = x
         self.rect.y = y
 
 
@@ -18,8 +18,8 @@ class Cleaner(pygame.sprite.Sprite):
     def __init__(self, x, y, group):
         super().__init__(all_sprites)
         self.image = pygame.sprite.Sprite()
-        self.image = pygame.image.load('cleaner.jpeg')
-        self.image = pygame.transform.scale(self.image, (160, 160))
+        self.image = pygame.image.load('new_cleaner.png')
+        self.image = pygame.transform.scale(self.image, (120, 120))
         self.image.set_colorkey('white')
         self.rect = self.image.get_rect()
         self.x = x
@@ -56,12 +56,30 @@ class Carpet(pygame.sprite.Sprite):
         self.image = pygame.image.load('carpet.jpeg')
         self.image = pygame.transform.scale(self.image, (750, 150))
         self.rect = self.image.get_rect()
-        self.rect.x = 0
+        self.rect.x = x
         self.rect.y = y
 
 
-class Slipers(pygame.sprite.Sprite):
-    pass
+class Gas(pygame.sprite.Sprite):
+    def __init__(self, x, y, group):
+        super().__init__(all_sprites)
+        self.image = pygame.sprite.Sprite()
+        self.image = pygame.image.load('gas.png')
+        self.image.set_colorkey('white')
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.center = (x, y + 75)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.time = pygame.time.get_ticks()
+        self.start = random.choice([0, 2, 1, 3]) * 1000
+        self.add(group)
+
+    def update(self, *args):
+        if self.rect.x >= 0 - 300:
+            self.rect.x -= 5
+        else:
+            self.rect.x += 1200
 
 
 class Cockroach(pygame.sprite.Sprite):
@@ -84,9 +102,17 @@ class Cockroach(pygame.sprite.Sprite):
     def move(self):
         self.rect.y -= 150
 
-    def colllision(self):
+    def collision_cleaner(self):
         game_over = False
         for elem in cleaners:
+            if pygame.sprite.collide_mask(self, elem):
+                game_over = True
+                break
+        return game_over
+
+    def collision_gas(self):
+        game_over = False
+        for elem in gas:
             if pygame.sprite.collide_mask(self, elem):
                 game_over = True
                 break
@@ -108,23 +134,21 @@ def cleaners_in_line(x, y, type):
         Cleaner(x - 500, y, cleaners)
 
 
+
 def start_fon():
     pygame.mixer.music.load('music.mp3')
     pygame.mixer.music.play(loops=-1, start=0.0, fade_ms=0)
     pygame.mixer.music.set_volume(0.2)
     for i in range(3):
         num = random.choice([1, 2, 3])
-        # 1 cleaner
-        # 2 puddle
-        # 3 slipers
-        if num == 3:
-            Carpet(0, 150 * i)
-            # Slipers(0, 150 * i)
-        elif num == 1:
+        if num == 1:
             Floor(0, 150 * i)
-            (Cleaner(0, 150 * i, cleaners))
+            Cleaner(0, 150 * i, cleaners)
             type = random.choice([1, 2, 3])
             cleaners_in_line(0, 150 * i, type)
+        elif num == 3:
+            Carpet(0, 150 * i)
+            Gas(0, 150 * i, gas)
         else:
             Floor(0, 150 * i)
             (Puddle(0, 145 * i))
@@ -157,17 +181,22 @@ def hello_screen():
     screen.fill('white')
     font = pygame.font.SysFont('comicsansms', 35)
 
+    logo = pygame.image.load('logo.jpeg')
+    logo = pygame.transform.scale(logo, (650, 350))
+    screen.blit(logo, (40, 10))
+
     text = font.render('Правила игры:', True, (0, 0, 0))
-    screen.blit(text, (250, 300))
+    screen.blit(text, (250, 350))
 
     text2 = font.render('1) Под пылесосы попадать нельзя', True, (0, 0, 0))
-    screen.blit(text2, (90, 350))
+    screen.blit(text2, (90, 400))
 
     text3 = font.render('2) На лужах нельзя долго стоять', True, (0, 0, 0))
-    screen.blit(text3, (100, 400))
+    screen.blit(text3, (100, 450))
 
     text4 = font.render('3) Если попадаешь под спрей - умираешь', True, (0, 0, 0))
-    screen.blit(text4, (25, 450))
+    screen.blit(text4, (25, 500))
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -190,8 +219,8 @@ screen = pygame.display.set_mode((width, height))
 all_sprites = pygame.sprite.Group()
 
 cleaners = pygame.sprite.Group()
+gas = pygame.sprite.Group()
 puddles = pygame.sprite.Group()
-
 hello_screen()
 
 start_fon()
@@ -203,12 +232,15 @@ camera = Camera()
 pygame.font.init()
 font = pygame.font.SysFont('comicsansms', 35)
 
+font_timer = pygame.font.SysFont('comicsansms', 50)
 score = 0
 
 all_results = []
 game = True
 next_wind = True
 have_collision_with_puddle = False
+text_timer =  font_timer.render('', True, (255, 0, 0))
+delta = 1000
 while next_wind:
     while game:
         screen.fill('white')
@@ -222,15 +254,18 @@ while next_wind:
                     if pygame.sprite.collide_mask(puddle, cockroach):
                         time = pygame.time.get_ticks()
                         have_collision_with_puddle = True
+                        timer = 3
+                        delta = 1000
                         break
-                else:
-                    have_collision_with_puddle = False
-
+                    else:
+                        have_collision_with_puddle = False
+                        text_timer = font.render('', True, (255, 0, 0))
+                        delta = 1000
                 score += 1
                 num = random.choice([1, 2, 3, 4])
                 # 1 cleaner
                 # 2 puddle
-                # 3 slipers
+                # 3 gas
                 # 4 floor
                 if num == 1:
                     Floor(0, -150)
@@ -242,23 +277,26 @@ while next_wind:
                     (Puddle(0, -150))
                 elif num == 3:
                     Carpet(0, -150)
-                    # Slipers(0, -150)
+                    Gas(650, -150, gas)
                 elif num == 4:
                     Floor(0, -150)
 
         # Update
         cleaners.update()
-
+        gas.update()
         camera.update(cockroach)
         # обновляем положение всех спрайтов
         for sprite in all_sprites:
             camera.apply(sprite)
-        if cockroach.colllision():
+        if cockroach.collision_cleaner() or cockroach.collision_gas():
             game = False
             fail_sound.play(0)
             all_results.append(score)
-
         if have_collision_with_puddle:
+            if pygame.time.get_ticks() - time >= delta:
+                timer -= 1
+                delta += 1000
+            text_timer = font_timer.render(str(timer), True, (255, 0, 0))
             if pygame.time.get_ticks() - time >= 3000:
                 game = False
                 fail_sound.play(0)
@@ -269,6 +307,7 @@ while next_wind:
         screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
         text = font.render(str(score), True, (0, 0, 0))
         screen.blit(text, (375, 0))
+        screen.blit(text_timer, (375, 40))
         pygame.display.flip()
         fpsClock.tick(fps)
 
@@ -277,7 +316,7 @@ while next_wind:
 
     restart()
 
-    restart_button = pygame.image.load('restart.png').convert_alpha()
+    restart_button = pygame.image.load('square_restart.png').convert_alpha()
     restart_button = pygame.transform.scale(restart_button, (144, 144))
     screen.blit(restart_button, (303, 375))
 
@@ -303,8 +342,10 @@ while next_wind:
                 screen = pygame.display.set_mode((width, height))
                 screen.fill('white')
                 cleaners = pygame.sprite.Group()
+                gas = pygame.sprite.Group()
                 puddles = pygame.sprite.Group()
                 have_collision_with_puddle = False
+                text_timer = font_timer.render('', True, (255, 0, 0))
                 start_fon()
                 fail_sound.stop()
                 pygame.mixer.music.play(loops=-1, start=0.0, fade_ms=0)
