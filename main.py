@@ -172,26 +172,28 @@ class Camera:
         self.dy = -(target.rect.y + target.rect.h // 2 - height / 5 * 3 - 75)
 
 
-def restart():
-    pygame.draw.rect(screen, 'white', ((150, 150), (450, 450)), width=0)
-    pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
 
 
 def hello_screen():
     screen.fill('white')
     font = pygame.font.SysFont('comicsansms', 35)
 
+    logo = pygame.image.load('logo.jpeg')
+    logo = pygame.transform.scale(logo, (650, 350))
+    screen.blit(logo, (40, 10))
+
     text = font.render('Правила игры:', True, (0, 0, 0))
-    screen.blit(text, (250, 300))
+    screen.blit(text, (250, 350))
 
     text2 = font.render('1) Под пылесосы попадать нельзя', True, (0, 0, 0))
-    screen.blit(text2, (90, 350))
+    screen.blit(text2, (90, 400))
 
     text3 = font.render('2) На лужах нельзя долго стоять', True, (0, 0, 0))
-    screen.blit(text3, (100, 400))
+    screen.blit(text3, (100, 450))
 
     text4 = font.render('3) Если попадаешь под спрей - умираешь', True, (0, 0, 0))
-    screen.blit(text4, (25, 450))
+    screen.blit(text4, (25, 500))
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -227,12 +229,15 @@ camera = Camera()
 pygame.font.init()
 font = pygame.font.SysFont('comicsansms', 35)
 
+font_timer = pygame.font.SysFont('comicsansms', 50)
 score = 0
 
 all_results = []
 game = True
 next_wind = True
 have_collision_with_puddle = False
+text_timer =  font_timer.render('', True, (255, 0, 0))
+delta = 1000
 while next_wind:
     while game:
         screen.fill('white')
@@ -246,11 +251,13 @@ while next_wind:
                     if pygame.sprite.collide_mask(puddle, cockroach):
                         time = pygame.time.get_ticks()
                         have_collision_with_puddle = True
+                        timer = 3
+                        delta = 1000
                         break
-
                     else:
                         have_collision_with_puddle = False
-
+                        text_timer = font.render('', True, (255, 0, 0))
+                        delta = 1000
                 score += 1
                 num = random.choice([1, 2, 3, 4])
                 # 1 cleaner
@@ -283,6 +290,10 @@ while next_wind:
             fail_sound.play(0)
             all_results.append(score)
         if have_collision_with_puddle:
+            if pygame.time.get_ticks() - time >= delta:
+                timer -= 1
+                delta += 1000
+            text_timer = font_timer.render(str(timer), True, (255, 0, 0))
             if pygame.time.get_ticks() - time >= 3000:
                 game = False
                 fail_sound.play(0)
@@ -293,13 +304,15 @@ while next_wind:
         screen.blit(cockroach.get_image(), (cockroach.x, cockroach.y))
         text = font.render(str(score), True, (0, 0, 0))
         screen.blit(text, (375, 0))
+        screen.blit(text_timer, (375, 40))
         pygame.display.flip()
         fpsClock.tick(fps)
 
     #######
     pygame.mixer.music.stop()
 
-    restart()
+    pygame.draw.rect(screen, 'white', ((150, 150), (450, 450)), width=0)
+    pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
 
     restart_button = pygame.image.load('square_restart.png').convert_alpha()
     restart_button = pygame.transform.scale(restart_button, (144, 144))
@@ -330,6 +343,7 @@ while next_wind:
                 gas = pygame.sprite.Group()
                 puddles = pygame.sprite.Group()
                 have_collision_with_puddle = False
+                text_timer = font_timer.render('', True, (255, 0, 0))
                 start_fon()
                 fail_sound.stop()
                 pygame.mixer.music.play(loops=-1, start=0.0, fade_ms=0)
