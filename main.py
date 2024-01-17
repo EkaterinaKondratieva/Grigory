@@ -173,6 +173,7 @@ class Camera:
 
 
 
+
 def hello_screen():
     screen.fill('white')
     font = pygame.font.SysFont('comicsansms', 35)
