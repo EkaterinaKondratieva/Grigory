@@ -172,10 +172,6 @@ class Camera:
         self.dy = -(target.rect.y + target.rect.h // 2 - height / 5 * 3 - 75)
 
 
-def restart():
-    pygame.draw.rect(screen, 'white', ((150, 150), (450, 450)), width=0)
-    pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
-
 
 def hello_screen():
     screen.fill('white')
@@ -314,7 +310,8 @@ while next_wind:
     #######
     pygame.mixer.music.stop()
 
-    restart()
+    pygame.draw.rect(screen, 'white', ((150, 150), (450, 450)), width=0)
+    pygame.draw.rect(screen, 'black', ((145, 145), (455, 455)), width=5)
 
     restart_button = pygame.image.load('square_restart.png').convert_alpha()
     restart_button = pygame.transform.scale(restart_button, (144, 144))
