@@ -333,7 +333,7 @@ while next_wind:
             pos = event.pos
             x_pos = pos[0]
             y_pos = pos[1]
-            if 303 + 144 >= x_pos and x_pos >= 303 and y_pos >= 375 and y_pos <= 375 + 144:
+            if 303 + 144 >= x_pos >= 303 and 375 <= y_pos <= 375 + 144:
                 game = True
                 width, height = 750, 750
                 score = 0
